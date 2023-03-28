@@ -10,6 +10,7 @@ type Cmd struct {
 	helpFlag    bool
 	versionFlag bool
 	cpOptions   string
+	XjreOption  string
 	class       string
 	args        []string
 }
@@ -26,6 +27,8 @@ func parseCmd() *Cmd {
 
 	flag.StringVar(&cmd.cpOptions, "classpath", "", "classpath")
 	flag.StringVar(&cmd.cpOptions, "cp", "", "classpath")
+
+	flag.StringVar(&cmd.XjreOption, "Xjre", "", "path to jre")
 
 	flag.Parse()
 
