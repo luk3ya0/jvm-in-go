@@ -19,11 +19,11 @@ func main() {
 }
 
 func startJVM(cmd *Cmd) {
-	cp := classpath.Parse(cmd.XjreOption, cmd.cpOptions)
+	classPath := classpath.Parse(cmd.XjreOption, cmd.cpOptions)
 	className := strings.Replace(cmd.class, ".", "/", -1)
-	cf := loadClass(className, cp)
+	classFile := loadClass(className, classPath)
 	fmt.Println(cmd.class)
-	printClassInfo(cf)
+	printClassInfo(classFile)
 }
 
 func loadClass(className string, cp *classpath.Classpath) *classfile.ClassFile {

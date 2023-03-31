@@ -14,7 +14,7 @@ func newWildcardEntry(path string) CompositeEntry {
 			return err
 		}
 
-		if info.IsDir() && path != baseDir {
+		if info.IsDir() && path != baseDir { // stop endless search down
 			return filepath.SkipDir
 		}
 
