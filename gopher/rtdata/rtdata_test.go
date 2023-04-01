@@ -6,7 +6,7 @@ import (
 )
 
 func TestLocalVars(t *testing.T) {
-	frameLocalVars := newFrame(100, 100).localVars
+	frameLocalVars := newFrame(NewThread(), 100, 100).localVars
 
 	var tests = []struct {
 		input uint

@@ -1,6 +1,8 @@
 package rtdata
 
-import "math"
+import (
+	"math"
+)
 
 type OperandStack struct {
 	size  uint
@@ -69,4 +71,14 @@ func (self *OperandStack) PopRef() *Object {
 	ref := self.slots[self.size].ref
 	self.slots[self.size].ref = nil
 	return ref
+}
+
+func (self *OperandStack) PushSlot(slot Slot) {
+	self.slots[self.size] = slot
+	self.size++
+}
+
+func (self *OperandStack) PopSlot() Slot {
+	self.size--
+	return self.slots[self.size]
 }
