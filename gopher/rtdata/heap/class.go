@@ -37,6 +37,15 @@ func newClass(cf *classfile.ClassFile) *Class {
 	return class
 }
 
+func (self *Class) ArrayClass() *Class {
+	arrClassName := getArrayClassName(self.name)
+	return self.loader.LoadClass(arrClassName)
+}
+
+func (self *Class) Loader() *ClassLoader {
+	return self.loader
+}
+
 func (self *Class) IsPublic() bool {
 	return 0 != self.accessFlags&ACC_PUBLIC
 }
@@ -125,6 +134,30 @@ func (self *Class) getStaticMethod(name, descriptor string) *Method {
 	return nil
 }
 
+func (self *Class) isJlObject() bool {
+	return self.name == "java/lang/Object"
+}
+func (self *Class) isJlCloneable() bool {
+	return self.name == "java/lang/Cloneable"
+}
+func (self *Class) isJioSerializable() bool {
+	return self.name == "java/io/Serializable"
+}
+
 func (self *Class) NewObject() *Object {
 	return newObject(self)
+}
+
+func (self *Class) getField(name, descriptor string, isStatic bool) *Field {
+	for c := self; c != nil; c = c.superClass {
+		for _, field := range c.fields {
+			if field.IsStatic() == isStatic &&
+				field.name == name &&
+				field.descriptor == descriptor {
+				return field
+			}
+		}
+	}
+
+	return nil
 }
