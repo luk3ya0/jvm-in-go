@@ -1,5 +1,6 @@
 package com.luke;
 
+
 public class MyObject {
     public static int staticVar;
     public int instanceVar;
@@ -14,6 +15,9 @@ public class MyObject {
         Object obj = myObj;
         if (obj instanceof MyObject) { // instanceof
             myObj = (MyObject) obj; // checkcast
+            System.out.println(myObj.instanceVar);
         }
     }
 }
+
+
