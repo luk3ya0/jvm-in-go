@@ -1,7 +1,6 @@
 package classfile
 
-// TODO: tag definition
-
+// Constant pool tags
 const (
 	CONSTANT_Class              = 7
 	CONSTANT_Fieldref           = 9
@@ -19,6 +18,12 @@ const (
 	CONSTANT_InvokeDynamic      = 18
 )
 
+/*
+cp_info {
+    u1 tag;
+    u1 info[];
+}
+*/
 type ConstantInfo interface {
 	readInfo(reader *ClassReader)
 }
@@ -27,10 +32,10 @@ func readConstantInfo(reader *ClassReader, cp ConstantPool) ConstantInfo {
 	tag := reader.readUint8()
 	c := newConstantInfo(tag, cp)
 	c.readInfo(reader)
-
 	return c
 }
 
+// todo ugly code
 func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
 	switch tag {
 	case CONSTANT_Integer:

@@ -1,28 +1,32 @@
 package classfile
 
-import (
-	"encoding/binary"
-)
+import "encoding/binary"
 
 type ClassReader struct {
 	data []byte
 }
 
+// u1
 func (self *ClassReader) readUint8() uint8 {
-	value := self.data[0]
+	val := self.data[0]
 	self.data = self.data[1:]
-	return value
-} // u1
+	return val
+}
+
+// u2
 func (self *ClassReader) readUint16() uint16 {
-	value := binary.BigEndian.Uint16(self.data)
+	val := binary.BigEndian.Uint16(self.data)
 	self.data = self.data[2:]
-	return value
-} // u2
+	return val
+}
+
+// u4
 func (self *ClassReader) readUint32() uint32 {
 	val := binary.BigEndian.Uint32(self.data)
 	self.data = self.data[4:]
 	return val
-} // u4
+}
+
 func (self *ClassReader) readUint64() uint64 {
 	val := binary.BigEndian.Uint64(self.data)
 	self.data = self.data[8:]
