@@ -65,8 +65,24 @@ func (self *Class) IsEnum() bool {
 	return 0 != self.accessFlags&ACC_ENUM
 }
 
+func (self *Class) Name() string {
+	return self.name
+}
+
 func (self *Class) ConstantPool() *ConstantPool {
 	return self.constantPool
+}
+
+func (self *Class) Methods() []*Method {
+	return self.methods
+}
+
+func (self *Class) Fields() []*Field {
+	return self.fields
+}
+
+func (self *Class) SuperClass() *Class {
+	return self.superClass
 }
 
 func (self *Class) StaticVars() Slots {
@@ -75,10 +91,10 @@ func (self *Class) StaticVars() Slots {
 
 func (self *Class) isAccessibleTo(other *Class) bool {
 	return self.IsPublic() ||
-		self.getPackageName() == other.getPackageName()
+		self.GetPackageName() == other.GetPackageName()
 }
 
-func (self *Class) getPackageName() string {
+func (self *Class) GetPackageName() string {
 	if i := strings.LastIndex(self.name, "/"); i >= 0 {
 		return self.name[:i]
 	}
@@ -87,6 +103,10 @@ func (self *Class) getPackageName() string {
 
 func (self *Class) GetMainMethod() *Method {
 	return self.getStaticMethod("main", "([Ljava/lang/String;)V")
+}
+
+func (self *Class) GetClinitMethod() *Method {
+	return self.getStaticMethod("<clinit>", "()V")
 }
 
 func (self *Class) getStaticMethod(name, descriptor string) *Method {
