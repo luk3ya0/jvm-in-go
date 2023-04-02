@@ -1,14 +1,13 @@
 package classpath
 
-import (
-	"errors"
-	"strings"
-)
+import "errors"
+import "strings"
 
 type CompositeEntry []Entry
 
 func newCompositeEntry(pathList string) CompositeEntry {
-	var compositeEntry []Entry
+	compositeEntry := []Entry{}
+
 	for _, path := range strings.Split(pathList, pathListSeparator) {
 		entry := newEntry(path)
 		compositeEntry = append(compositeEntry, entry)
@@ -29,10 +28,11 @@ func (self CompositeEntry) readClass(className string) ([]byte, Entry, error) {
 }
 
 func (self CompositeEntry) String() string {
-	strPaths := make([]string, len(self))
+	strs := make([]string, len(self))
+
 	for i, entry := range self {
-		strPaths[i] = entry.String()
+		strs[i] = entry.String()
 	}
 
-	return strings.Join(strPaths, pathListSeparator)
+	return strings.Join(strs, pathListSeparator)
 }
