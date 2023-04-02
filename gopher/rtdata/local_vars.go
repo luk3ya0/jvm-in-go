@@ -1,6 +1,9 @@
 package rtdata
 
-import "math"
+import (
+	"gopher/rtdata/heap"
+	"math"
+)
 
 type LocalVars []Slot
 
@@ -8,7 +11,6 @@ func newLocalVars(maxLocals uint) LocalVars {
 	if maxLocals > 0 {
 		return make([]Slot, maxLocals)
 	}
-
 	return nil
 }
 
@@ -38,7 +40,6 @@ func (self LocalVars) SetLong(index uint, val int64) {
 func (self LocalVars) GetLong(index uint) int64 {
 	low := uint32(self[index].num)
 	high := uint32(self[index+1].num)
-
 	return int64(high)<<32 | int64(low)
 }
 
@@ -52,10 +53,10 @@ func (self LocalVars) GetDouble(index uint) float64 {
 	return math.Float64frombits(bits)
 }
 
-func (self LocalVars) SetRef(index uint, ref *Object) {
+func (self LocalVars) SetRef(index uint, ref *heap.Object) {
 	self[index].ref = ref
 }
 
-func (self LocalVars) GetRef(index uint) *Object {
+func (self LocalVars) GetRef(index uint) *heap.Object {
 	return self[index].ref
 }

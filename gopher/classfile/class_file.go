@@ -86,8 +86,8 @@ func (self *ClassFile) ConstantPool() ConstantPool {
 	return self.constantPool
 }
 
-// AccessFlag a exported getter for access flag
-func (self *ClassFile) AccessFlag() uint16 {
+// AccessFlags a exported getter for access flag
+func (self *ClassFile) AccessFlags() uint16 {
 	return self.accessFlags
 }
 
