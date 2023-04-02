@@ -19,7 +19,11 @@ type Class struct {
 	instanceSlotCount uint
 	staticSlotCount   uint
 	staticVars        Slots
+	initStarted       bool
 }
+
+func (self *Class) InitStarted() bool { return self.initStarted }
+func (self *Class) StartInit()        { self.initStarted = true }
 
 func newClass(cf *classfile.ClassFile) *Class {
 	class := &Class{}
