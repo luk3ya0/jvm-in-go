@@ -1,12 +1,11 @@
 package references
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-	"reflect"
-)
+import "reflect"
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
+// Throw exception or error
 type ATHROW struct{ base.NoOperandsInstruction }
 
 func (self *ATHROW) Execute(frame *rtdata.Frame) {
@@ -26,12 +25,12 @@ func findAndGotoExceptionHandler(thread *rtdata.Thread, ex *heap.Object) bool {
 		frame := thread.CurrentFrame()
 		pc := frame.NextPC() - 1
 
-		handlePC := frame.Method().FindExceptionHandler(ex.Class(), pc)
-		if handlePC > 0 {
+		handlerPC := frame.Method().FindExceptionHandler(ex.Class(), pc)
+		if handlerPC > 0 {
 			stack := frame.OperandStack()
 			stack.Clear()
 			stack.PushRef(ex)
-			frame.SetNextPC(handlePC)
+			frame.SetNextPC(handlerPC)
 			return true
 		}
 
@@ -40,10 +39,10 @@ func findAndGotoExceptionHandler(thread *rtdata.Thread, ex *heap.Object) bool {
 			break
 		}
 	}
-
 	return false
 }
 
+// todo
 func handleUncaughtException(thread *rtdata.Thread, ex *heap.Object) {
 	thread.ClearStack()
 

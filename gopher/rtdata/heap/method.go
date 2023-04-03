@@ -4,12 +4,16 @@ import "gopher/classfile"
 
 type Method struct {
 	ClassMember
-	maxStack        uint
-	maxLocals       uint
-	code            []byte
-	argSlotCount    uint
-	exceptionTable  ExceptionTable
-	lineNumberTable *classfile.LineNumberTableAttribute
+	maxStack                uint
+	maxLocals               uint
+	code                    []byte
+	exceptionTable          ExceptionTable // todo: rename
+	lineNumberTable         *classfile.LineNumberTableAttribute
+	exceptions              *classfile.ExceptionsAttribute // todo: rename
+	parameterAnnotationData []byte                         // RuntimeVisibleParameterAnnotations_attribute
+	annotationDefaultData   []byte                         // AnnotationDefault_attribute
+	parsedDescriptor        *MethodDescriptor
+	argSlotCount            uint
 }
 
 func newMethods(class *Class, cfMethods []*classfile.MemberInfo) []*Method {
@@ -26,11 +30,27 @@ func newMethod(class *Class, cfMethod *classfile.MemberInfo) *Method {
 	method.copyMemberInfo(cfMethod)
 	method.copyAttributes(cfMethod)
 	md := parseMethodDescriptor(method.descriptor)
+	method.parsedDescriptor = md
 	method.calcArgSlotCount(md.parameterTypes)
 	if method.IsNative() {
 		method.injectCodeAttribute(md.returnType)
 	}
 	return method
+}
+
+func (self *Method) copyAttributes(cfMethod *classfile.MemberInfo) {
+	if codeAttr := cfMethod.CodeAttribute(); codeAttr != nil {
+		self.maxStack = codeAttr.MaxStack()
+		self.maxLocals = codeAttr.MaxLocals()
+		self.code = codeAttr.Code()
+		self.lineNumberTable = codeAttr.LineNumberTableAttribute()
+		self.exceptionTable = newExceptionTable(codeAttr.ExceptionTable(),
+			self.class.constantPool)
+	}
+	self.exceptions = cfMethod.ExceptionsAttribute()
+	self.annotationData = cfMethod.RuntimeVisibleAnnotationsAttributeData()
+	self.parameterAnnotationData = cfMethod.RuntimeVisibleParameterAnnotationsAttributeData()
+	self.annotationDefaultData = cfMethod.AnnotationDefaultAttributeData()
 }
 
 func (self *Method) calcArgSlotCount(paramTypes []string) {
@@ -40,48 +60,28 @@ func (self *Method) calcArgSlotCount(paramTypes []string) {
 			self.argSlotCount++
 		}
 	}
-
 	if !self.IsStatic() {
-		self.argSlotCount++
+		self.argSlotCount++ // `this` reference
 	}
 }
 
 func (self *Method) injectCodeAttribute(returnType string) {
-	self.maxStack = 4
+	self.maxStack = 4 // todo
 	self.maxLocals = self.argSlotCount
 	switch returnType[0] {
 	case 'V':
 		self.code = []byte{0xfe, 0xb1} // return
+	case 'L', '[':
+		self.code = []byte{0xfe, 0xb0} // areturn
 	case 'D':
 		self.code = []byte{0xfe, 0xaf} // dreturn
 	case 'F':
 		self.code = []byte{0xfe, 0xae} // freturn
 	case 'J':
 		self.code = []byte{0xfe, 0xad} // lreturn
-	case 'L', '[':
-		self.code = []byte{0xfe, 0xb0} // areturn
 	default:
 		self.code = []byte{0xfe, 0xac} // ireturn
 	}
-}
-
-func (self *Method) copyAttributes(cfMethod *classfile.MemberInfo) {
-	if codeAttr := cfMethod.CodeAttribute(); codeAttr != nil {
-		self.maxStack = codeAttr.MaxStack()
-		self.maxLocals = codeAttr.MaxLocals()
-		self.code = codeAttr.Code()
-		self.lineNumberTable = codeAttr.LineNumberTableAttribute()
-		self.exceptionTable = newExceptionTable(codeAttr.ExceptionTable(), self.class.constantPool)
-	}
-}
-
-func (self *Method) FindExceptionHandler(exClass *Class, pc int) int {
-	handler := self.exceptionTable.findExceptionHandler(exClass, pc)
-	if handler != nil {
-		return handler.handlePc
-	}
-
-	return -1
 }
 
 func (self *Method) IsSynchronized() bool {
@@ -103,6 +103,7 @@ func (self *Method) IsStrict() bool {
 	return 0 != self.accessFlags&ACC_STRICT
 }
 
+// getters
 func (self *Method) MaxStack() uint {
 	return self.maxStack
 }
@@ -112,8 +113,25 @@ func (self *Method) MaxLocals() uint {
 func (self *Method) Code() []byte {
 	return self.code
 }
+func (self *Method) ParameterAnnotationData() []byte {
+	return self.parameterAnnotationData
+}
+func (self *Method) AnnotationDefaultData() []byte {
+	return self.annotationDefaultData
+}
+func (self *Method) ParsedDescriptor() *MethodDescriptor {
+	return self.parsedDescriptor
+}
 func (self *Method) ArgSlotCount() uint {
 	return self.argSlotCount
+}
+
+func (self *Method) FindExceptionHandler(exClass *Class, pc int) int {
+	handler := self.exceptionTable.findExceptionHandler(exClass, pc)
+	if handler != nil {
+		return handler.handlePc
+	}
+	return -1
 }
 
 func (self *Method) GetLineNumber(pc int) int {
@@ -124,4 +142,48 @@ func (self *Method) GetLineNumber(pc int) int {
 		return -1
 	}
 	return self.lineNumberTable.GetLineNumber(pc)
+}
+
+func (self *Method) isConstructor() bool {
+	return !self.IsStatic() && self.name == "<init>"
+}
+func (self *Method) isClinit() bool {
+	return self.IsStatic() && self.name == "<clinit>"
+}
+
+// reflection
+func (self *Method) ParameterTypes() []*Class {
+	if self.argSlotCount == 0 {
+		return nil
+	}
+
+	paramTypes := self.parsedDescriptor.parameterTypes
+	paramClasses := make([]*Class, len(paramTypes))
+	for i, paramType := range paramTypes {
+		paramClassName := toClassName(paramType)
+		paramClasses[i] = self.class.loader.LoadClass(paramClassName)
+	}
+
+	return paramClasses
+}
+func (self *Method) ReturnType() *Class {
+	returnType := self.parsedDescriptor.returnType
+	returnClassName := toClassName(returnType)
+	return self.class.loader.LoadClass(returnClassName)
+}
+func (self *Method) ExceptionTypes() []*Class {
+	if self.exceptions == nil {
+		return nil
+	}
+
+	exIndexTable := self.exceptions.ExceptionIndexTable()
+	exClasses := make([]*Class, len(exIndexTable))
+	cp := self.class.constantPool
+
+	for i, exIndex := range exIndexTable {
+		classRef := cp.GetConstant(uint(exIndex)).(*ClassRef)
+		exClasses[i] = classRef.ResolvedClass()
+	}
+
+	return exClasses
 }

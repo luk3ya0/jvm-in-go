@@ -39,6 +39,24 @@ func (self *ClassLoader) loadBasicClasses() {
 	}
 }
 
+func (self *ClassLoader) loadPrimitiveClasses() {
+	for primitiveType, _ := range primitiveTypes {
+		self.loadPrimitiveClass(primitiveType)
+	}
+}
+
+func (self *ClassLoader) loadPrimitiveClass(className string) {
+	class := &Class{
+		accessFlags: ACC_PUBLIC, // todo
+		name:        className,
+		loader:      self,
+		initStarted: true,
+	}
+	class.jClass = self.classMap["java/lang/Class"].NewObject()
+	class.jClass.extra = class
+	self.classMap[className] = class
+}
+
 func (self *ClassLoader) LoadClass(name string) *Class {
 	if class, ok := self.classMap[name]; ok {
 		// already loaded
@@ -60,28 +78,9 @@ func (self *ClassLoader) LoadClass(name string) *Class {
 	return class
 }
 
-func (self *ClassLoader) loadPrimitiveClasses() {
-	for primitiveType, _ := range primitiveTypes {
-		self.loadPrimitiveClass(primitiveType)
-	}
-}
-
-func (self *ClassLoader) loadPrimitiveClass(className string) {
-	class := &Class{
-		accessFlags: ACC_PUBLIC,
-		name:        className,
-		loader:      self,
-		initStarted: true,
-	}
-
-	class.jClass = self.classMap["java/lang/Class"].NewObject()
-	class.jClass.extra = class
-	self.classMap[className] = class
-}
-
 func (self *ClassLoader) loadArrayClass(name string) *Class {
 	class := &Class{
-		accessFlags: ACC_PUBLIC,
+		accessFlags: ACC_PUBLIC, // todo
 		name:        name,
 		loader:      self,
 		initStarted: true,
@@ -116,6 +115,7 @@ func (self *ClassLoader) readClass(name string) ([]byte, classpath.Entry) {
 // jvms 5.3.5
 func (self *ClassLoader) defineClass(data []byte) *Class {
 	class := parseClass(data)
+	hackClass(class)
 	class.loader = self
 	resolveSuperClass(class)
 	resolveInterfaces(class)
@@ -229,5 +229,13 @@ func initStaticFinalVar(class *Class, field *Field) {
 			jStr := JString(class.Loader(), goStr)
 			vars.SetRef(slotId, jStr)
 		}
+	}
+}
+
+// todo
+func hackClass(class *Class) {
+	if class.name == "java/lang/ClassLoader" {
+		loadLibrary := class.GetStaticMethod("loadLibrary", "(Ljava/lang/Class;Ljava/lang/String;Z)V")
+		loadLibrary.code = []byte{0xb1} // return void
 	}
 }

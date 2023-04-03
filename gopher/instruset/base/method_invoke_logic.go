@@ -1,9 +1,12 @@
 package base
 
+import "fmt"
+import "strings"
 import "gopher/rtdata"
 import "gopher/rtdata/heap"
 
 func InvokeMethod(invokerFrame *rtdata.Frame, method *heap.Method) {
+	//_logInvoke(callerFrame.Thread().StackDepth(), method)
 	thread := invokerFrame.Thread()
 	newFrame := thread.NewFrame(method)
 	thread.PushFrame(newFrame)
@@ -15,4 +18,11 @@ func InvokeMethod(invokerFrame *rtdata.Frame, method *heap.Method) {
 			newFrame.LocalVars().SetSlot(uint(i), slot)
 		}
 	}
+}
+
+func _logInvoke(stackSize uint, method *heap.Method) {
+	space := strings.Repeat(" ", int(stackSize))
+	className := method.Class().Name()
+	methodName := method.Name()
+	fmt.Printf("[method]%v %v.%v()\n", space, className, methodName)
 }

@@ -1,16 +1,17 @@
 package lang
 
-import (
-	"gopher/native"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/native"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
+
+const jlString = "java/lang/String"
 
 func init() {
-	native.Register("java/lang/String", "intern", "()Ljava/lang/String;", intern)
+	native.Register(jlString, "intern", "()Ljava/lang/String;", intern)
 }
 
 // public native String intern();
+// ()Ljava/lang/String;
 func intern(frame *rtdata.Frame) {
 	this := frame.LocalVars().GetThis()
 	interned := heap.InternString(this)
