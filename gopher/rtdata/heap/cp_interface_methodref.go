@@ -22,14 +22,6 @@ func (self *InterfaceMethodRef) ResolvedInterfaceMethod() *Method {
 	return self.method
 }
 
-func (self *InterfaceMethodRef) ResolvedInterafaceMethod() *Method {
-	if self.method == nil {
-		self.resolveInterfaceMethodRef()
-	}
-
-	return self.method
-}
-
 func (self *InterfaceMethodRef) resolveInterfaceMethodRef() {
 	d := self.cp.class
 	c := self.ResolvedClass()
@@ -42,10 +34,11 @@ func (self *InterfaceMethodRef) resolveInterfaceMethodRef() {
 	if method == nil {
 		panic("java.lang.NoSuchMethodError")
 	}
-
 	if !method.isAccessibleTo(d) {
 		panic("java.lang.IllegalAccessError")
 	}
+
+	self.method = method
 }
 
 func lookupInterfaceMethod(iface *Class, name, descriptor string) *Method {
