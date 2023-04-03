@@ -4,6 +4,7 @@ import "gopher/instruset/base"
 import "gopher/rtdata"
 import "gopher/rtdata/heap"
 
+// Set static field in class
 type PUT_STATIC struct{ base.Index16Instruction }
 
 func (self *PUT_STATIC) Execute(frame *rtdata.Frame) {
@@ -13,7 +14,6 @@ func (self *PUT_STATIC) Execute(frame *rtdata.Frame) {
 	fieldRef := cp.GetConstant(self.Index).(*heap.FieldRef)
 	field := fieldRef.ResolvedField()
 	class := field.Class()
-
 	if !class.InitStarted() {
 		frame.RevertNextPC()
 		base.InitClass(frame.Thread(), class)

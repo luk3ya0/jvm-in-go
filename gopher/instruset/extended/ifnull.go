@@ -1,10 +1,9 @@
 package extended
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
+// Branch if reference is null
 type IFNULL struct{ base.BranchInstruction }
 
 func (self *IFNULL) Execute(frame *rtdata.Frame) {
@@ -14,6 +13,7 @@ func (self *IFNULL) Execute(frame *rtdata.Frame) {
 	}
 }
 
+// Branch if reference not null
 type IFNONNULL struct{ base.BranchInstruction }
 
 func (self *IFNONNULL) Execute(frame *rtdata.Frame) {

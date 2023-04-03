@@ -1,32 +1,31 @@
 package stack
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
+// Duplicate the top operand stack value
 type DUP struct{ base.NoOperandsInstruction }
 
 func (self *DUP) Execute(frame *rtdata.Frame) {
 	stack := frame.OperandStack()
 	slot := stack.PopSlot()
-
 	stack.PushSlot(slot)
 	stack.PushSlot(slot)
 }
 
+// Duplicate the top operand stack value and insert two values down
 type DUP_X1 struct{ base.NoOperandsInstruction }
 
 func (self *DUP_X1) Execute(frame *rtdata.Frame) {
 	stack := frame.OperandStack()
 	slot1 := stack.PopSlot()
 	slot2 := stack.PopSlot()
-
 	stack.PushSlot(slot1)
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 }
 
+// Duplicate the top operand stack value and insert two or three values down
 type DUP_X2 struct{ base.NoOperandsInstruction }
 
 func (self *DUP_X2) Execute(frame *rtdata.Frame) {
@@ -34,26 +33,26 @@ func (self *DUP_X2) Execute(frame *rtdata.Frame) {
 	slot1 := stack.PopSlot()
 	slot2 := stack.PopSlot()
 	slot3 := stack.PopSlot()
-
 	stack.PushSlot(slot1)
 	stack.PushSlot(slot3)
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 }
 
+// Duplicate the top one or two operand stack values
 type DUP2 struct{ base.NoOperandsInstruction }
 
 func (self *DUP2) Execute(frame *rtdata.Frame) {
 	stack := frame.OperandStack()
 	slot1 := stack.PopSlot()
 	slot2 := stack.PopSlot()
-
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 }
 
+// Duplicate the top one or two operand stack values and insert two or three values down
 type DUP2_X1 struct{ base.NoOperandsInstruction }
 
 func (self *DUP2_X1) Execute(frame *rtdata.Frame) {
@@ -61,7 +60,6 @@ func (self *DUP2_X1) Execute(frame *rtdata.Frame) {
 	slot1 := stack.PopSlot()
 	slot2 := stack.PopSlot()
 	slot3 := stack.PopSlot()
-
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 	stack.PushSlot(slot3)
@@ -69,6 +67,7 @@ func (self *DUP2_X1) Execute(frame *rtdata.Frame) {
 	stack.PushSlot(slot1)
 }
 
+// Duplicate the top one or two operand stack values and insert two, three, or four values down
 type DUP2_X2 struct{ base.NoOperandsInstruction }
 
 func (self *DUP2_X2) Execute(frame *rtdata.Frame) {
@@ -77,7 +76,6 @@ func (self *DUP2_X2) Execute(frame *rtdata.Frame) {
 	slot2 := stack.PopSlot()
 	slot3 := stack.PopSlot()
 	slot4 := stack.PopSlot()
-
 	stack.PushSlot(slot2)
 	stack.PushSlot(slot1)
 	stack.PushSlot(slot4)

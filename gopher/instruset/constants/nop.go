@@ -1,11 +1,11 @@
 package constants
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
-// NOP Do nothing
+// Do nothing
 type NOP struct{ base.NoOperandsInstruction }
 
-func (self *NOP) Execute(frame *rtdata.Frame) { /* do nothing */ }
+func (self *NOP) Execute(frame *rtdata.Frame) {
+	// really do nothing
+}

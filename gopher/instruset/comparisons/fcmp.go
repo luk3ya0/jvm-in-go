@@ -1,10 +1,9 @@
 package comparisons
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
+// Compare float
 type FCMPG struct{ base.NoOperandsInstruction }
 
 func (self *FCMPG) Execute(frame *rtdata.Frame) {
@@ -19,10 +18,8 @@ func (self *FCMPL) Execute(frame *rtdata.Frame) {
 
 func _fcmp(frame *rtdata.Frame, gFlag bool) {
 	stack := frame.OperandStack()
-
 	v2 := stack.PopFloat()
 	v1 := stack.PopFloat()
-
 	if v1 > v2 {
 		stack.PushInt(1)
 	} else if v1 == v2 {

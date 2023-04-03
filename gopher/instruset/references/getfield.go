@@ -4,6 +4,7 @@ import "gopher/instruset/base"
 import "gopher/rtdata"
 import "gopher/rtdata/heap"
 
+// Fetch field from object
 type GET_FIELD struct{ base.Index16Instruction }
 
 func (self *GET_FIELD) Execute(frame *rtdata.Frame) {

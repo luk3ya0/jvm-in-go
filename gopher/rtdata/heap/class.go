@@ -20,10 +20,19 @@ type Class struct {
 	staticSlotCount   uint
 	staticVars        Slots
 	initStarted       bool
+	jClass            *Object
 }
 
 func (self *Class) InitStarted() bool { return self.initStarted }
 func (self *Class) StartInit()        { self.initStarted = true }
+
+func (self *Class) JClass() *Object {
+	return self.jClass
+}
+
+func (self *Class) JavaName() string {
+	return strings.Replace(self.name, "/", ".", -1)
+}
 
 func newClass(cf *classfile.ClassFile) *Class {
 	class := &Class{}

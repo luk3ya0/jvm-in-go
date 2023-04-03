@@ -1,11 +1,10 @@
 package references
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
+// Invoke a class (static) method
 type INVOKE_STATIC struct{ base.Index16Instruction }
 
 func (self *INVOKE_STATIC) Execute(frame *rtdata.Frame) {

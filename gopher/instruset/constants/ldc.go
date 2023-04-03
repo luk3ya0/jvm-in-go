@@ -1,10 +1,8 @@
 package constants
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
 import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
 // Push item from run-time constant pool
 type LDC struct{ base.Index8Instruction }
@@ -33,7 +31,10 @@ func _ldc(frame *rtdata.Frame, index uint) {
 	case string:
 		internedStr := heap.JString(class.Loader(), c.(string))
 		stack.PushRef(internedStr)
-	// case *heap.ClassRef:
+	case *heap.ClassRef:
+		classRef := c.(*heap.ClassRef)
+		classObj := classRef.ResolvedClass().JClass()
+		stack.PushRef(classObj)
 	// case MethodType, MethodHandle
 	default:
 		panic("todo: ldc!")

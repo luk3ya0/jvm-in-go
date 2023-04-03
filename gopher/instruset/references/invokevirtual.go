@@ -1,12 +1,11 @@
 package references
 
-import (
-	"fmt"
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "fmt"
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
+// Invoke instance method; dispatch based on class
 type INVOKE_VIRTUAL struct{ base.Index16Instruction }
 
 func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
@@ -20,13 +19,13 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 
 	ref := frame.OperandStack().GetRefFromTop(resolvedMethod.ArgSlotCount() - 1)
 	if ref == nil {
+		// hack!
 		if methodRef.Name() == "println" {
 			_println(frame.OperandStack(), methodRef.Descriptor())
-
 			return
 		}
 
-		panic("java.lang.NullPointException")
+		panic("java.lang.NullPointerException")
 	}
 
 	if resolvedMethod.IsProtected() &&
@@ -35,11 +34,13 @@ func (self *INVOKE_VIRTUAL) Execute(frame *rtdata.Frame) {
 		ref.Class() != currentClass &&
 		!ref.Class().IsSubClassOf(currentClass) {
 
-		panic("java.lang.IllegalAccessError")
+		if !(ref.Class().IsArray() && resolvedMethod.Name() == "clone") {
+			panic("java.lang.IllegalAccessError")
+		}
 	}
 
-	methodToBeInvoked := heap.LookupMethodInClass(ref.Class(), methodRef.Name(), methodRef.Descriptor())
-
+	methodToBeInvoked := heap.LookupMethodInClass(ref.Class(),
+		methodRef.Name(), methodRef.Descriptor())
 	if methodToBeInvoked == nil || methodToBeInvoked.IsAbstract() {
 		panic("java.lang.AbstractMethodError")
 	}

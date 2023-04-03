@@ -1,9 +1,7 @@
 package comparisons
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
 // Compare double
 type DCMPG struct{ base.NoOperandsInstruction }

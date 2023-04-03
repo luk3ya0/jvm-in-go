@@ -1,10 +1,9 @@
 package math
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
+// Increment local variable by constant
 type IINC struct {
 	Index uint
 	Const int32

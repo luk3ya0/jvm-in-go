@@ -1,10 +1,8 @@
 package loads
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
 // Load reference from array
 type AALOAD struct{ base.NoOperandsInstruction }

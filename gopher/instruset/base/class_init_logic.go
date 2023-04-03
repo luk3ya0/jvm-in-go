@@ -1,10 +1,9 @@
 package base
 
-import (
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
+// jvms 5.5
 func InitClass(thread *rtdata.Thread, class *heap.Class) {
 	class.StartInit()
 	scheduleClinit(thread, class)
@@ -13,7 +12,8 @@ func InitClass(thread *rtdata.Thread, class *heap.Class) {
 
 func scheduleClinit(thread *rtdata.Thread, class *heap.Class) {
 	clinit := class.GetClinitMethod()
-	if clinit != nil {
+	if clinit != nil && clinit.Class() == class {
+		// exec <clinit>
 		newFrame := thread.NewFrame(clinit)
 		thread.PushFrame(newFrame)
 	}

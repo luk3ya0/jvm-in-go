@@ -1,12 +1,11 @@
 package references
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
 const (
+	//Array Type  atype
 	AT_BOOLEAN = 4
 	AT_CHAR    = 5
 	AT_FLOAT   = 6
@@ -17,18 +16,21 @@ const (
 	AT_LONG    = 11
 )
 
-type NEW_ARRAY struct{ atype uint8 }
+// Create new array
+type NEW_ARRAY struct {
+	atype uint8
+}
 
 func (self *NEW_ARRAY) FetchOperands(reader *base.BytecodeReader) {
 	self.atype = reader.ReadUint8()
 }
-
 func (self *NEW_ARRAY) Execute(frame *rtdata.Frame) {
 	stack := frame.OperandStack()
 	count := stack.PopInt()
 	if count < 0 {
 		panic("java.lang.NegativeArraySizeException")
 	}
+
 	classLoader := frame.Method().Class().Loader()
 	arrClass := getPrimitiveArrayClass(classLoader, self.atype)
 	arr := arrClass.NewArray(uint(count))

@@ -1,10 +1,8 @@
 package stores
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
 // Store into reference array
 type AASTORE struct{ base.NoOperandsInstruction }

@@ -1,30 +1,27 @@
 package references
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-	"gopher/rtdata/heap"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
+import "gopher/rtdata/heap"
 
+// Create new multidimensional array
 type MULTI_ANEW_ARRAY struct {
-	index       uint16
-	dimentsions uint8
+	index      uint16
+	dimensions uint8
 }
 
 func (self *MULTI_ANEW_ARRAY) FetchOperands(reader *base.BytecodeReader) {
 	self.index = reader.ReadUint16()
-	self.dimentsions = reader.ReadUint8()
+	self.dimensions = reader.ReadUint8()
 }
-
 func (self *MULTI_ANEW_ARRAY) Execute(frame *rtdata.Frame) {
 	cp := frame.Method().Class().ConstantPool()
 	classRef := cp.GetConstant(uint(self.index)).(*heap.ClassRef)
 	arrClass := classRef.ResolvedClass()
 
 	stack := frame.OperandStack()
-	counts := popAndCheckCounts(stack, int(self.dimentsions))
+	counts := popAndCheckCounts(stack, int(self.dimensions))
 	arr := newMultiDimensionalArray(counts, arrClass)
-
 	stack.PushRef(arr)
 }
 
@@ -43,6 +40,7 @@ func popAndCheckCounts(stack *rtdata.OperandStack, dimensions int) []int32 {
 func newMultiDimensionalArray(counts []int32, arrClass *heap.Class) *heap.Object {
 	count := uint(counts[0])
 	arr := arrClass.NewArray(count)
+
 	if len(counts) > 1 {
 		refs := arr.Refs()
 		for i := range refs {

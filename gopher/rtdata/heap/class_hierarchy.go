@@ -10,12 +10,12 @@ func (self *Class) isAssignableFrom(other *Class) bool {
 	}
 
 	if !s.IsArray() {
-
 		if !s.IsInterface() {
 			if !t.IsInterface() {
 				return s.IsSubClassOf(t)
 			} else {
-				s.IsImplements(t)
+				// t is interfaced
+				return s.IsImplements(t)
 			}
 		} else {
 			if !t.IsInterface() {
@@ -24,7 +24,6 @@ func (self *Class) isAssignableFrom(other *Class) bool {
 				return t.isSuperInterfaceOf(s)
 			}
 		}
-
 	} else {
 		if !t.IsArray() {
 			if !t.IsInterface() {
@@ -38,22 +37,10 @@ func (self *Class) isAssignableFrom(other *Class) bool {
 			return sc == tc || tc.isAssignableFrom(sc)
 		}
 	}
-
-	return false
-}
-
-func (self *Class) IsSubClassOf(other *Class) bool {
-	for c := self.superClass; c != nil; c = self.superClass {
-		if c == other {
-			return true
-		}
-	}
-
-	return false
 }
 
 // self extends c
-func (self *Class) isSubClassOf(other *Class) bool {
+func (self *Class) IsSubClassOf(other *Class) bool {
 	for c := self.superClass; c != nil; c = c.superClass {
 		if c == other {
 			return true

@@ -1,10 +1,9 @@
 package comparisons
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
+// Branch if int comparison with zero succeeds
 type IFEQ struct{ base.BranchInstruction }
 
 func (self *IFEQ) Execute(frame *rtdata.Frame) {

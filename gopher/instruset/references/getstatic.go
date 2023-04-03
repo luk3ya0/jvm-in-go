@@ -4,6 +4,7 @@ import "gopher/instruset/base"
 import "gopher/rtdata"
 import "gopher/rtdata/heap"
 
+// Get static field from class
 type GET_STATIC struct{ base.Index16Instruction }
 
 func (self *GET_STATIC) Execute(frame *rtdata.Frame) {
@@ -11,7 +12,6 @@ func (self *GET_STATIC) Execute(frame *rtdata.Frame) {
 	fieldRef := cp.GetConstant(self.Index).(*heap.FieldRef)
 	field := fieldRef.ResolvedField()
 	class := field.Class()
-
 	if !class.InitStarted() {
 		frame.RevertNextPC()
 		base.InitClass(frame.Thread(), class)

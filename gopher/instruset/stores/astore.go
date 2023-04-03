@@ -1,12 +1,9 @@
 package stores
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
 // Store reference into local variable
-
 type ASTORE struct{ base.Index8Instruction }
 
 func (self *ASTORE) Execute(frame *rtdata.Frame) {

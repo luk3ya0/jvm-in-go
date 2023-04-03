@@ -4,6 +4,7 @@ import "gopher/instruset/base"
 import "gopher/rtdata"
 import "gopher/rtdata/heap"
 
+// Set field in object
 type PUT_FIELD struct{ base.Index16Instruction }
 
 func (self *PUT_FIELD) Execute(frame *rtdata.Frame) {

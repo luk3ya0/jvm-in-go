@@ -1,12 +1,9 @@
 package loads
 
-import (
-	"gopher/instruset/base"
-	"gopher/rtdata"
-)
+import "gopher/instruset/base"
+import "gopher/rtdata"
 
 // Load double from local variable
-
 type DLOAD struct{ base.Index8Instruction }
 
 func (self *DLOAD) Execute(frame *rtdata.Frame) {
