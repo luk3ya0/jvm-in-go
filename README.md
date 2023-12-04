@@ -7,7 +7,8 @@ I record all code in different chapter. The previous chapter can be used as the 
 This is a method to map and pull all the remote branch.
 
 ```shell
-$ git branch -r | grep -v 'main' | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
+$ git branch -r | grep -v 'main' | grep -v '\->' | \ # deselect branch mapped to local
+    while read remote; do git branch --track "${remote#origin/}" "$remote"; done
 branch 'chapter01' set up to track 'origin/chapter01'.
 branch 'chapter02' set up to track 'origin/chapter02'.
 branch 'chapter03' set up to track 'origin/chapter03'.
