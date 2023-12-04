@@ -2,7 +2,7 @@
 
 ## How to Build and Test
 
-I record all code in different chapter. The previous chapter can be used as the starter for the following chapter.
+I record all code in different chapter. The previous chapter can be used as the starter for the following one.
 
 This is a method to map and pull all the remote branch.
 
