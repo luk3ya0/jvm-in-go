@@ -1,5 +1,7 @@
 # jvm-in-go
 
+[Original Resource](https://github.com/zxh0/jvmgo-book)
+
 ## How to Build and Test
 
 I record all code in different chapter. The previous chapter can be used as the starter for the following one.
