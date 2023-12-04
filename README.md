@@ -34,4 +34,6 @@ $ git pull --all
 
 ## TODO
 
-- [ ] Using `go.work` and `go.mod` to refine the project.
+- [ ] Using `go.work` to track across multiple modules into one workspace.
+
+- [ ] Using `go.mod` to use local relative modules.
